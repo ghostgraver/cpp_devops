@@ -1,9 +1,9 @@
 # 主程序
-export app = graver
+app = graver
 # person 库
-export lib_person = person
+lib_person = person
 # 测试程序
-export test_app = graver_test
+test_app = graver_test
 
 
 # 命令行参数 -----------------------------------------------------
@@ -22,18 +22,18 @@ export work_dir = $(shell pwd)
 export build_dir = build
 # 根据构建类型， 设置不同的构建目录
 ifeq ($(BUILD_TYPE),debug)
-	export bin_dir = $(build_dir)/debug/dist/bin
-	export test_bin_dir = $(build_dir)/debug/dist/test
-	export obj_app_dir = $(build_dir)/debug/obj/src/app
-	export obj_person_dir = $(build_dir)/debug/obj/src/person
-	export obj_test_dir = $(build_dir)/debug/obj/test
+	bin_dir = $(build_dir)/debug/dist/bin
+	test_bin_dir = $(build_dir)/debug/dist/test
+	obj_app_dir = $(build_dir)/debug/obj/src/app
+	obj_person_dir = $(build_dir)/debug/obj/src/person
+	obj_test_dir = $(build_dir)/debug/obj/test
 	export lib_dir = $(build_dir)/debug/dist/lib
 else
-	export bin_dir = $(build_dir)/release/dist/bin
-	export test_bin_dir = $(build_dir)/release/dist/test
-	export obj_app_dir = $(build_dir)/release/obj/src/app
-	export obj_person_dir = $(build_dir)/release/obj/src/person
-	export obj_test_dir = $(build_dir)/release/obj/test
+	bin_dir = $(build_dir)/release/dist/bin
+	test_bin_dir = $(build_dir)/release/dist/test
+	obj_app_dir = $(build_dir)/release/obj/src/app
+	obj_person_dir = $(build_dir)/release/obj/src/person
+	obj_test_dir = $(build_dir)/release/obj/test
 	export lib_dir = $(build_dir)/release/dist/lib
 endif
 
@@ -52,25 +52,25 @@ endif
 
 # person 库 ------------------------------------
 # person 动态库名称
-export lib_person_dynamic_name = lib$(lib_person).so
+lib_person_dynamic_name = lib$(lib_person).so
 # person 静态库名称
-export lib_person_static_name = lib$(lib_person).a
+lib_person_static_name = lib$(lib_person).a
 # person 库链接
 ifeq ($(LINK_TYPE), dynamic)
-	export lib_person_link = -lperson
+	lib_person_link = -lperson
 else
-	export lib_person_link = -l:libperson.a
+	lib_person_link = -l:libperson.a
 endif
 
 
 # 主程序头文件目录
-export inc_dir = -I $(work_dir)/include
+inc_dir = -I $(work_dir)/include
 
 # 测试程序头文件目录
-export inc_test_dir = $(inc_dir) -I $(work_dir)/third
+inc_test_dir = $(inc_dir) -I $(work_dir)/third
 
 # 子目录的 make 命令
-export MAKE = bear --output build/release/compile_commands.json -- make -w
+MAKE = bear --output build/release/compile_commands.json -- make -w
 
 # 默认目标
 ALL: before_build app_build test_build
@@ -91,14 +91,14 @@ before_build:
 
 # 构建主程序
 app_build:person_build
-	@$(MAKE) -C src/app
+	@$(MAKE) -C src/app exec_name="$(app)" exec_dir="$(bin_dir)" inc_path="$(inc_dir)" obj_dir="$(obj_app_dir)" libs="$(lib_person_link)"
 person_build:
-	@$(MAKE) -C src/person
+	@$(MAKE) -C src/person obj_dir="$(obj_person_dir)" inc_path="$(inc_dir)" lib_dynamic_name="$(lib_person_dynamic_name)" lib_static_name="$(lib_person_static_name)"
 
 # 构建测试程序
 ifeq ($(BUILD_TEST),on)
 test_build:
-	@$(MAKE) -C test
+	@$(MAKE) -C test exec_name="$(test_app)" exec_dir="$(test_bin_dir)" inc_path="$(inc_test_dir)" obj_dir="$(obj_test_dir)" libs="$(lib_person_link)"
 else
 test_build:
 endif
