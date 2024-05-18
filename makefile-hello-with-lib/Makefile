@@ -16,26 +16,20 @@ BUILD_TEST ?= on
 LINK_TYPE ?=dynamic
 
 # ----------------------------------------------------------------
-
 # 工作目录
 export work_dir = $(shell pwd)
 # 构建目录
 export build_dir = build
-
 # 根据构建类型， 设置不同的构建目录
 ifeq ($(BUILD_TYPE),debug)
 	export bin_dir = $(build_dir)/debug/dist/bin
 	export test_bin_dir = $(build_dir)/debug/dist/test
-	export obj_app_dir = $(build_dir)/debug/obj/src/app
-	export obj_person_dir = $(build_dir)/debug/obj/src/person
-	export obj_test_dir = $(build_dir)/debug/obj/test
+	export obj_dir = $(build_dir)/debug/obj
 	export lib_dir = $(build_dir)/debug/dist/lib
 else
 	export bin_dir = $(build_dir)/release/dist/bin
 	export test_bin_dir = $(build_dir)/release/dist/test
-	export obj_app_dir = $(build_dir)/release/obj/src/app
-	export obj_person_dir = $(build_dir)/release/obj/src/person
-	export obj_test_dir = $(build_dir)/release/obj/test
+	export obj_dir = $(build_dir)/release/obj
 	export lib_dir = $(build_dir)/release/dist/lib
 endif
 
@@ -59,15 +53,10 @@ export lib_person_dynamic_name = lib$(lib_person).so
 export lib_person_static_name = lib$(lib_person).a
 # person 库链接
 ifeq ($(LINK_TYPE), dynamic)
-	export person_link = -lperson
+	export lib_person_link = -lperson
 else
-	export person_link = -l:libperson.a
+	export lib_person_link = -l:libperson.a
 endif
-# person .o 文件列表
-srcs_person_with_dir = $(wildcard ./src/person/*.cpp)
-srcs_person_without_dir = $(notdir $(srcs_person_with_dir))
-objs_person_without_path = $(patsubst %.cpp, %.o, $(srcs_person_without_dir))
-export objs_person = $(addprefix $(work_dir)/$(obj_person_dir)/,$(objs_person_without_path))
 
 
 # 主程序头文件目录
@@ -88,14 +77,10 @@ ALL: before_build app_build test_build
 
 # 构建前准备
 before_build:
-	$(call fun_parse_objs, ./src/person/*.cpp)
-	@echo $(objs_t)
 	$(call fun_mkdir, build/release) # 由于 bear 命令要求目录必须存在， 所以创建此目录
 	$(call fun_mkdir, $(bin_dir))
 	$(call fun_mkdir, $(test_bin_dir))
-	$(call fun_mkdir, $(obj_app_dir))
-	$(call fun_mkdir, $(obj_person_dir))
-	$(call fun_mkdir, $(obj_test_dir))
+	$(call fun_mkdir, $(obj_dir))
 	$(call fun_mkdir, $(lib_dir))
 
 # 构建主程序
@@ -118,6 +103,7 @@ clean_debug:
 clean_release:
 	-rm -rf $(build_dir)/release
 clean:clean_debug clean_release
+	-rm -rf $(build_dir)
 
 # 运行主程序
 run:ALL

@@ -1,5 +1,4 @@
-objs_list = $(objs_person)
-lib_list = $(person_link)
+libs = $(lib_person_link)
 
 # 使用 wildcard 函数匹配当前目录下的所有 .cpp 文件， 此列表带目录
 srcs_with_dir = $(wildcard ./*.cpp)
@@ -20,4 +19,4 @@ $(work_dir)/$(obj_test_dir)/%.o : %.cpp
 	$(CC) $(CXXFLAGS) -c $< $(inc_test_dir) -o $@
 
 $(bin_name): $(objs)
-	$(CC) $(CXXFLAGS) -L$(work_dir)/$(lib_dir) -Wl,-rpath=$$ORIGIN/../lib $(lib_list) $^ $(objs_list) -o $@
+	$(CC) $(CXXFLAGS) $^ $(inc_test_dir) -L$(work_dir)/$(lib_dir) -Wl,-rpath=$$ORIGIN../lib $(libs) -o $@
