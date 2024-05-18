@@ -24,12 +24,16 @@ export build_dir = build
 ifeq ($(BUILD_TYPE),debug)
 	export bin_dir = $(build_dir)/debug/dist/bin
 	export test_bin_dir = $(build_dir)/debug/dist/test
-	export obj_dir = $(build_dir)/debug/obj
+	export obj_app_dir = $(build_dir)/debug/obj/src/app
+	export obj_person_dir = $(build_dir)/debug/obj/src/person
+	export obj_test_dir = $(build_dir)/debug/obj/test
 	export lib_dir = $(build_dir)/debug/dist/lib
 else
 	export bin_dir = $(build_dir)/release/dist/bin
 	export test_bin_dir = $(build_dir)/release/dist/test
-	export obj_dir = $(build_dir)/release/obj
+	export obj_app_dir = $(build_dir)/release/obj/src/app
+	export obj_person_dir = $(build_dir)/release/obj/src/person
+	export obj_test_dir = $(build_dir)/release/obj/test
 	export lib_dir = $(build_dir)/release/dist/lib
 endif
 
@@ -80,7 +84,9 @@ before_build:
 	$(call fun_mkdir, build/release) # 由于 bear 命令要求目录必须存在， 所以创建此目录
 	$(call fun_mkdir, $(bin_dir))
 	$(call fun_mkdir, $(test_bin_dir))
-	$(call fun_mkdir, $(obj_dir))
+	$(call fun_mkdir, $(obj_app_dir))
+	$(call fun_mkdir, $(obj_person_dir))
+	$(call fun_mkdir, $(obj_test_dir))
 	$(call fun_mkdir, $(lib_dir))
 
 # 构建主程序
